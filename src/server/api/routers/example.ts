@@ -16,6 +16,7 @@ export const exampleRouter = createTRPCRouter({
     }),
 
   getAll: publicProcedure.query(({ ctx }) => {
+    // get all example documents from mongoDB
     return ctx.prisma.example.findMany();
   }),
 

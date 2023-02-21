@@ -12,6 +12,14 @@ async function seed() {
     {
       name: "john",
     },
+    {
+      name: "peter",
+      address: {
+        street: "123 Main St",
+        city: "New York",
+        zip: "12345",
+      },
+    },
   ];
 
   try {
