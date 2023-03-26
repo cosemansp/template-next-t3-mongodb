@@ -22,6 +22,7 @@ import { prisma } from "@/server/db";
 
 type CreateContextOptions = {
   session: Session | null;
+  token: JWT | null;
 };
 
 /**
@@ -37,6 +38,7 @@ type CreateContextOptions = {
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
+    token: opts.token,
     prisma,
   };
 };
@@ -52,9 +54,11 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
+  const token = await getToken({ req });
 
   return createInnerTRPCContext({
     session,
+    token,
   });
 };
 
@@ -65,6 +69,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import { getToken, type JWT } from "next-auth/jwt";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -98,13 +103,14 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session || !ctx.session.user || !ctx.token) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       // infers the `session` as non-nullable
       session: { ...ctx.session, user: ctx.session.user },
+      token: ctx.token,
     },
   });
 });

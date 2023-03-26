@@ -54,3 +54,65 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+## Microsoft Graph API
+
+See more at [Graph Explorer](https://developer.microsoft.com/en-us/graph/graph-explorer).
+
+```bash
+# my profile
+https://graph.microsoft.com/v1.0/me
+
+# profile photo
+https://graph.microsoft.com/v1.0/me/photo/$value
+
+# groups in organizations
+https://graph.microsoft.com/v1.0/groups
+
+# group members
+https://graph.microsoft.com/v1.0/groups/0f8308ae-d7b1-4baf-ad19-94574a636af2/members?$count=true&$top=5
+```
+
+## Next/Auth
+
+Client side (in pages)
+
+```js
+// is only available in client side
+// see also the <SessionProvider /> in _app.tsx
+const { data } = useSession();
+```
+
+Server side (in pages/api)
+
+```js
+const session = await getServerSession({ req, res, authOptions });
+const session = await getServerAuthSession({ req, res });
+const token = await getToken({ req });
+```
+
+## Azure AD security
+
+### Token expiration
+
+Access tokens lifetime is assigned a random value ranging between 60-90 minutes. The lifetime of a refresh token is 24 hours.
+
+Refresh tokens can be revoked at any time, because of timeouts and revocations. Your app must handle rejections by the sign-in service gracefully when this occurs. See https://learn.microsoft.com/en-us/azure/active-directory/develop/refresh-tokens#revocation
+
+
+Refresh token request failure
+
+```json
+{
+  error: 'invalid_grant',
+  error_description: 'AADSTS9002313: Invalid request. Request is malformed or invalid.\r\n' +
+    'Trace ID: 4bb33602-b1ab-4f79-a93e-895ea5d92800\r\n' +
+    'Correlation ID: c48ce8b3-1210-497a-b21e-b74ec101c2b2\r\n' +
+    'Timestamp: 2023-03-26 11:22:17Z',
+  error_codes: [ 9002313 ],
+  timestamp: '2023-03-26 11:22:17Z',
+  trace_id: '4bb33602-b1ab-4f79-a93e-895ea5d92800',
+  correlation_id: 'c48ce8b3-1210-497a-b21e-b74ec101c2b2',
+  error_uri: 'https://login.microsoftonline.com/error?code=9002313'
+}
+```

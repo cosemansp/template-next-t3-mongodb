@@ -11,6 +11,7 @@ specifiers:
   '@trpc/react-query': ^10.18.0
   '@trpc/server': ^10.18.0
   '@types/eslint': ^8.21.3
+  '@types/memory-cache': ^0.2.2
   '@types/node': ^18.15.5
   '@types/prettier': ^2.7.2
   '@types/react': ^18.0.29
@@ -23,6 +24,7 @@ specifiers:
   eslint: ^8.36.0
   eslint-config-next: ^13.2.4
   jsdom: ^21.1.1
+  memory-cache: ^0.2.0
   msw: ^1.2.1
   next: ^13.2.4
   next-auth: ^4.20.1
@@ -48,6 +50,8 @@ dependencies:
   '@trpc/next': 10.18.0_fk7ybuwqrs7skzzxcj6wjc5c3i
   '@trpc/react-query': 10.18.0_rcvfzig2xktluz4p7kugxqlbwi
   '@trpc/server': 10.18.0
+  '@types/memory-cache': 0.2.2
+  memory-cache: 0.2.0
   next: 13.2.4_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.20.1_ld2jel3hspngo3u5lti2kgl2sq
   react: 18.2.0
@@ -1067,6 +1071,10 @@ packages:
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
+
+  /@types/memory-cache/0.2.2:
+    resolution: {integrity: sha512-xNnm6EkmYYhTnLiOHC2bdKgcYY5qjjrq5vl9KXD2nh0em0koZoFS500EL4Q4V/eW+A3P7NC7P7GIYzNOSQp7jQ==}
+    dev: false
 
   /@types/ms/0.7.31:
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
@@ -3379,6 +3387,10 @@ packages:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
+
+  /memory-cache/0.2.0:
+    resolution: {integrity: sha512-OcjA+jzjOYzKmKS6IQVALHLVz+rNTMPoJvCztFaZxwG14wtAW7VRZjwTQu06vKCYOxh4jVnik7ya0SXTB0W+xA==}
+    dev: false
 
   /merge2/1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
