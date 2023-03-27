@@ -39,11 +39,12 @@ type ResponseType = keyof ResponseMap | "json";
 /**
  * Returns a fetch function that adds the access token to the Authorization header
  * and improves the error handling
- * @param
- * @returns
+ * @param {NextApiRequest} req - the request object with the access token
+ * @param {string}  accessToken - optional access token, when not provided by req object
+ * @returns {function} fetch function
  */
 export const getSecureFetch = (req: NextApiRequest, accessToken?: string) => {
-  const fetch = <TData = unknown, R extends ResponseType = "json">(
+  return <TData = unknown, R extends ResponseType = "json">(
     url: string,
     options: FetchOptions<R> = { headers: {} }
   ) => {
@@ -71,17 +72,9 @@ export const getSecureFetch = (req: NextApiRequest, accessToken?: string) => {
       throw err;
     });
   };
-
-  return fetch;
 };
 
-export const stripODataType = <TData extends object>(source: TData): TData => {
-  if (typeof source === "object" && source !== null) {
-    const newObj = { ...source };
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    delete newObj["@odata.type"];
-    return newObj;
-  }
-  return source;
-};
+/**
+ * Alias for ofetch
+ */
+export const fetch = ofetch;

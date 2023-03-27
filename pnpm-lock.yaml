@@ -24,6 +24,7 @@ specifiers:
   dotenv: ^16.0.3
   eslint: ^8.36.0
   eslint-config-next: ^13.2.4
+  eventemitter2: ^6.4.9
   jsdom: ^21.1.1
   msw: ^1.2.1
   next: ^13.2.4
@@ -54,6 +55,7 @@ dependencies:
   '@trpc/react-query': 10.18.0_rcvfzig2xktluz4p7kugxqlbwi
   '@trpc/server': 10.18.0
   '@types/memory-cache': 0.2.2
+  eventemitter2: 6.4.9
   next: 13.2.4_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.20.1_ld2jel3hspngo3u5lti2kgl2sq
   odata-query: 7.0.3
@@ -2466,6 +2468,10 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /eventemitter2/6.4.9:
+    resolution: {integrity: sha512-JEPTiaOt9f04oa6NOkc4aH+nVp5I3wEjpHbIPqfgCdD5v5bUzy7xQqwcVO2aDQgOWhI28da57HksMrzK9HlRxg==}
+    dev: false
 
   /events/3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}

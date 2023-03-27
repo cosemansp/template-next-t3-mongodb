@@ -1,8 +1,8 @@
 import { withAuth } from "@/server/auth";
-import { fetchQuery, getSecureFetch, stripODataType } from "@/server/fetch";
+import { fetchQuery, getSecureFetch } from "@/server/fetch";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { GraphUser, GraphGroup } from "./types";
-import buildODataQuery from "odata-query";
+import { omitOData, buildODataQuery } from "@/utils/odata";
 
 type GraphGroupPayload = {
   value: Pick<GraphGroup, "id">[];
@@ -51,7 +51,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // filter out any test users
   const members = membersPayload.value
     .filter((member) => !member.jobTitle.includes("Test"))
-    .map(stripODataType);
+    .map(omitOData);
 
   console.timeEnd("graph/members");
   return res.status(200).json(members);

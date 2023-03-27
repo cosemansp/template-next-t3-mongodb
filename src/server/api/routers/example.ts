@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { type UserChangeEvent, domainEvents } from "@/server/domainEvents";
 
 import {
   createTRPCRouter,
@@ -21,6 +22,7 @@ export const exampleRouter = createTRPCRouter({
   }),
 
   getSecretMessage: protectedProcedure.query(({}) => {
+    domainEvents.raise<UserChangeEvent>("user.changed", { userId: "5" });
     return "you can now see this secret message!";
   }),
 });

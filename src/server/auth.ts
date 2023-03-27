@@ -188,7 +188,7 @@ export const authOptions: NextAuthOptions = {
       clientId: env.AZURE_AD_CLIENT_ID,
       clientSecret: env.AZURE_AD_CLIENT_SECRET,
       tenantId: env.AZURE_AD_TENANT_ID,
-      idToken: true,
+      // idToken: true,
       checks: ["pkce"], // to prevent CSRF and authorization code injection attacks.
       authorization: {
         params: {

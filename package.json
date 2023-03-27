@@ -25,6 +25,7 @@
     "@trpc/react-query": "^10.18.0",
     "@trpc/server": "^10.18.0",
     "@types/memory-cache": "^0.2.2",
+    "eventemitter2": "^6.4.9",
     "next": "^13.2.4",
     "next-auth": "^4.20.1",
     "odata-query": "^7.0.3",
