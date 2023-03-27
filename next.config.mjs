@@ -9,6 +9,7 @@
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
+  pageExtensions: ["page.tsx", "route.ts"],
 
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you

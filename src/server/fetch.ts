@@ -1,66 +1,87 @@
-import cache from "memory-cache";
+import { QueryClient } from "@tanstack/query-core";
+import { ofetch, FetchError } from "ofetch";
+import type { FetchOptions } from "ofetch";
 
-type FetchOptions = {
-  token: string;
-  cacheTime?: number; // seconds
-};
+import type { NextApiRequest } from "next";
 
-type ODataFetchOptions = FetchOptions & {
-  select?: string;
-  filter?: string;
-  top?: number;
-};
-
-export const odataFetch = async <TResult = unknown>(
-  url: string,
-  options: ODataFetchOptions
-): Promise<TResult> => {
-  let combinedUrl = `${url}?$count=true`;
-  combinedUrl += options.top ? `&$top=${options.top}` : `&$top=128`;
-  if (options.select) {
-    combinedUrl += `&$select=${options.select}`;
-  }
-  if (options.filter) {
-    combinedUrl += `&$filter=${options.filter}`;
-  }
-  console.log("odataFetch", combinedUrl);
-  return nFetch(combinedUrl, options);
-};
-
-const getFromCache = <TResult>(key: string): TResult => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  return cache.get(key) as TResult;
-};
-
-export const nFetch = async <TResult = unknown>(
-  url: string,
-  options: FetchOptions
-): Promise<TResult> => {
-  // console.log("nFetch", url);
-  const cachedData = cache.get(url) as TResult;
-  if (cachedData) {
-    return Promise.resolve(cachedData);
-  }
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${options.token}`,
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
     },
-  });
-  const data = await response.json();
-  if (!response.ok) {
-    // strip 'error' prop when available
-    let cause = data as object;
-    if ("error" in data) {
-      cause = data.error;
-    }
-    throw new Error(`nfetch request failed: ${response.status}`, {
-      cause: { url, ...cause },
-    });
-  }
-  if (options.cacheTime) {
-    cache.put(url, data, options.cacheTime * 1000 /* ms */);
-  }
-  return data as TResult;
+  },
+});
+
+type QueryKey = readonly unknown[];
+type QueryFunction<TData = unknown> = () => TData | Promise<TData>;
+
+/**
+ * Simple wrapper around queryClient.fetchQuery
+ * @param keys
+ * @param queryFn
+ * @returns query result or cached version
+ */
+export const fetchQuery = <TData = unknown>(
+  keys: QueryKey,
+  queryFn: QueryFunction<TData>
+): Promise<TData> => {
+  return queryClient.fetchQuery(keys, queryFn);
 };
 
-export default nFetch;
+interface ResponseMap {
+  blob: Blob;
+  text: string;
+  arrayBuffer: ArrayBuffer;
+  stream: ReadableStream<Uint8Array>;
+}
+type ResponseType = keyof ResponseMap | "json";
+
+/**
+ * Returns a fetch function that adds the access token to the Authorization header
+ * and improves the error handling
+ * @param
+ * @returns
+ */
+export const getSecureFetch = (req: NextApiRequest, accessToken?: string) => {
+  const fetch = <TData = unknown, R extends ResponseType = "json">(
+    url: string,
+    options: FetchOptions<R> = { headers: {} }
+  ) => {
+    return ofetch<TData>(url, {
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${
+          accessToken || req.nextauth.token.accessToken
+        }`,
+      },
+    }).catch((err) => {
+      if (err instanceof FetchError) {
+        // improve error by adding error payload as cause
+        // when err.data contains an 'error' prop, use content of error prop
+        let cause = err.data;
+        if ("error" in err.data) {
+          cause = err.data.error;
+        }
+        const newError = new FetchError(err.message, { cause });
+        newError.status = err.status;
+        newError.statusText = err.statusText;
+        throw newError;
+      }
+      // some other error, rethrow
+      throw err;
+    });
+  };
+
+  return fetch;
+};
+
+export const stripODataType = <TData extends object>(source: TData): TData => {
+  if (typeof source === "object" && source !== null) {
+    const newObj = { ...source };
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    delete newObj["@odata.type"];
+    return newObj;
+  }
+  return source;
+};

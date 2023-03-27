@@ -1,7 +1,8 @@
 import { withAuth } from "@/server/auth";
-import { odataFetch } from "@/server/fetch";
+import { fetchQuery, getSecureFetch, stripODataType } from "@/server/fetch";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { GraphUser, GraphGroup } from "./types";
+import buildODataQuery from "odata-query";
 
 type GraphGroupPayload = {
   value: Pick<GraphGroup, "id">[];
@@ -12,22 +13,25 @@ type GraphMembersPayload = {
 };
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const fetch = getSecureFetch(req);
+
   // default group: employee
   console.time("graph/members");
   let groupId = "0f8308ae-d7b1-4baf-ad19-94574a636af2";
 
-  // get group name from query param
-  const group = req.query.group as string;
-  if (group) {
-    const groupPayload = await odataFetch<GraphGroupPayload>(
-      `https://graph.microsoft.com/v1.0/groups`,
-      {
+  // get group id when group expression is specified in query
+  const groupExp = req.query.group as string;
+  if (groupExp) {
+    const groupPayload = await fetchQuery(["groups", groupExp], () => {
+      const query = buildODataQuery({
+        count: true,
+        filter: `startswith(mail,'${groupExp}')`,
         select: "id",
-        filter: `startswith(mail,'${group}')`,
-        token: req.nextauth.token.accessToken,
-        cacheTime: 60 * 60 /* 1h */,
-      }
-    );
+      });
+      return fetch<GraphGroupPayload>(
+        `https://graph.microsoft.com/v1.0/groups${query}`
+      );
+    });
     if (groupPayload.value.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       groupId = groupPayload.value[0]!.id;
@@ -35,26 +39,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   // get members of group
-  const membersPayload = await odataFetch<GraphMembersPayload>(
-    `https://graph.microsoft.com/v1.0/groups/${groupId}/members`,
-    {
-      top: 999,
-      select: `id,displayName,mail,jobTitle`,
-      token: req.nextauth.token.accessToken,
-      cacheTime: 60 * 5 /* 5 min */,
-    }
-  );
+  const membersPayload = await fetchQuery(["members", groupId], () => {
+    const query = buildODataQuery({
+      select: "id,displayName,mail,jobTitle",
+    });
+    return fetch<GraphMembersPayload>(
+      `https://graph.microsoft.com/v1.0/groups/${groupId}/members${query}`
+    );
+  });
 
   // filter out any test users
   const members = membersPayload.value
     .filter((member) => !member.jobTitle.includes("Test"))
-    .map((member) => {
-      // and remove the '@odata.type'
-      return {
-        ...member,
-        "@odata.type": undefined,
-      };
-    });
+    .map(stripODataType);
 
   console.timeEnd("graph/members");
   return res.status(200).json(members);
