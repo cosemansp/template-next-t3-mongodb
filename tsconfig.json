@@ -22,9 +22,7 @@
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
     "plugins": [
       {
@@ -32,16 +30,6 @@
       }
     ]
   },
-  "include": [
-    ".eslintrc.cjs",
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.mjs",
-    ".next/types/**/*.ts"
-, "src/middleware.ts"  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": [ "**/*.ts", "**/*.tsx", "./declarations.d.ts"  ],
+  "exclude": [ "node_modules" ]
 }

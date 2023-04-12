@@ -2,7 +2,7 @@
 // @ts-ignore
 import matchers from "@testing-library/jest-dom/matchers";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
-import { server } from "./msw";
+import { server } from "./mockServer";
 import { cleanup } from "./test-utils";
 
 expect.extend(matchers);
@@ -21,3 +21,5 @@ afterEach(() => {
 afterAll(() => {
   server.close();
 });
+
+process.env.SKIP_ENV_VALIDATION = "true";
