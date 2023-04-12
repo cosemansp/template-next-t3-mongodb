@@ -6,7 +6,9 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
-  const { data } = api.example.getById.useQuery({ id: "1" });
+  const { data } = api.example.getById.useQuery({
+    id: "507f1f77bcf86cd799439011",
+  });
 
   return (
     <>
