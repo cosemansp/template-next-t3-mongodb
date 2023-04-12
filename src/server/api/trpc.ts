@@ -14,6 +14,7 @@
  *
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
+import type { PrismaClient } from "@prisma/client";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
 
@@ -21,8 +22,9 @@ import { getServerAuthSession } from "@/server/auth";
 import { prisma } from "@/server/db";
 
 type CreateContextOptions = {
-  session: Session | null;
-  token: JWT | null;
+  session?: Session | null;
+  token?: JWT | null;
+  prisma?: PrismaClient;
 };
 
 /**
@@ -35,11 +37,11 @@ type CreateContextOptions = {
  *
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     token: opts.token,
-    prisma,
+    prisma: opts.prisma || prisma,
   };
 };
 
@@ -103,7 +105,7 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || !ctx.token) {
+  if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({

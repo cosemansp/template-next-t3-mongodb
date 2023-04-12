@@ -8,7 +8,7 @@ import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
-  Session,
+  type Session,
 } from "next-auth";
 import AzureProvider from "next-auth/providers/azure-ad";
 import { type JWT, getToken } from "next-auth/jwt";
@@ -63,8 +63,8 @@ declare module "next-auth" {
    * on the `SessionProvider` React Context
    */
   interface Session extends DefaultSession {
-    tokenExpiresAt: Date;
-    tokenExpiresIn: string;
+    tokenExpiresAt?: Date;
+    tokenExpiresIn?: string;
     user: {
       id: string;
       email: string;
