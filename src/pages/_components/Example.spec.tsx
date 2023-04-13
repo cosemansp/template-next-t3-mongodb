@@ -1,16 +1,19 @@
 import { describe, test, expect } from "vitest";
 import ExampleList from "./ExampleList";
 import { render, waitFor, screen } from "@/tests/render";
-import { server } from "@/tests/mockServer";
-import { rest } from "msw";
-import { toTRPCResult } from "@/tests/json-utils";
+import { server, trpc } from "@/tests/mockServer";
+// import { rest } from "msw";
+// import { toTRPCResult } from "@/tests/json-utils";
 
 describe("Example", () => {
   test("works", async () => {
     server.resetHandlers(
-      rest.all("*/trpc/example.getById", (req, res, ctx) => {
-        return res(ctx.json(toTRPCResult({ id: 1, name: "test" })));
+      trpc.example.getById.query((req, res, ctx) => {
+        return res(ctx.data({ id: 1, name: "test" }));
       })
+      // rest.all("*/trpc/example.getById", (req, res, ctx) => {
+      //   return res(ctx.json(toTRPCResult({ id: 1, name: "test" })));
+      // })
     );
     render(<ExampleList />);
 
