@@ -1,41 +1,41 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/unbound-method */
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, vi } from "vitest";
 import type { inferProcedureInput } from "@trpc/server";
 import { appRouter, type AppRouter } from "@/server/api/root";
-import { mockDeep } from "vitest-mock-extended";
+import type { DeepMockProxy } from "vitest-mock-extended";
 import type { PrismaClient } from "@prisma/client";
 import { createInnerTRPCContext } from "../trpc";
 import * as exampleFixtures from "@/tests/fixtures/example";
 import type { Session } from "next-auth";
+import { prisma } from "@/server/db";
 
 type Input = inferProcedureInput<AppRouter["example"]["getById"]>;
 
+vi.mock("@/server/db");
+const prismaMock = <DeepMockProxy<PrismaClient>>prisma;
+
 describe("example", () => {
   test("getById", async () => {
-    const prisma = mockDeep<PrismaClient>();
     const mockData = exampleFixtures.single();
-    prisma.example.findUnique.mockResolvedValue(mockData);
+    prismaMock.example.findUnique.mockResolvedValue(mockData);
     const caller = appRouter.createCaller(createInnerTRPCContext({ prisma }));
 
     const input: Input = { id: mockData.id };
     const result = await caller.example.getById(input);
 
-    expect(prisma.example.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.example.findUnique).toHaveBeenCalledWith({
       where: { id: mockData.id },
     });
     expect(result).toStrictEqual(mockData);
   });
 
   test("getAll", async () => {
-    const prisma = mockDeep<PrismaClient>();
     const mockData = exampleFixtures.shortList();
-    prisma.example.findMany.mockResolvedValue(mockData);
+    prismaMock.example.findMany.mockResolvedValue(mockData);
     const caller = appRouter.createCaller(createInnerTRPCContext({ prisma }));
 
     const result = await caller.example.getAll();
 
-    expect(prisma.example.findMany).toHaveBeenCalled();
+    expect(prismaMock.example.findMany).toHaveBeenCalled();
     expect(result).toHaveLength(mockData.length);
     expect(result[0]?.id).toBe(mockData[0]!.id);
     expect(result[0]?.name).toBe(mockData[0]!.name);
