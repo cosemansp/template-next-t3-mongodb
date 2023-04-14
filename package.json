@@ -6,6 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "test": "vitest",
+    "test:int": "vitest --config vitest.test.config.ts",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",

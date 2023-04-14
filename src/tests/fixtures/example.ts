@@ -3,7 +3,7 @@ import type { Example } from "@prisma/client";
 
 export const single = (): Example => {
   return {
-    id: ObjectID().id,
+    id: ObjectID().toHexString(),
     name: "test",
     createdAt: new Date(),
     address: {
@@ -17,7 +17,7 @@ export const single = (): Example => {
 export const shortList = (): Example[] => {
   return [
     {
-      id: ObjectID().id,
+      id: ObjectID().toHexString(),
       name: "def",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -28,7 +28,7 @@ export const shortList = (): Example[] => {
       },
     },
     {
-      id: ObjectID().id,
+      id: ObjectID().toHexString(),
       name: "abc",
       createdAt: new Date(),
       updatedAt: new Date(),
