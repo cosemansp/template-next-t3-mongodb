@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method  */
 import { describe, test, expect, vi } from "vitest";
 import type { inferProcedureInput } from "@trpc/server";
 import { appRouter, type AppRouter } from "@/server/api/root";

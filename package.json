@@ -17,6 +17,7 @@
     "db:init": "docker-compose exec mongo mongo --eval \"rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'localhost:27017'}]});\""
   },
   "dependencies": {
+    "@cityssm/pdf-puppeteer": "2.0.0-beta.1",
     "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma/client": "^4.11.0",
     "@tanstack/query-core": "^4.27.0",
